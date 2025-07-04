@@ -11,9 +11,14 @@ import { IReadonlyTheme } from "@microsoft/sp-component-base";
 import * as strings from "FaqWebPartStrings";
 import Faq from "./components/Faq";
 import { IFaqProps } from "./components/IFaqProps";
+import {
+  PropertyFieldListPicker,
+  PropertyFieldListPickerOrderBy,
+} from "@pnp/spfx-property-controls/lib/PropertyFieldListPicker";
 
 export interface IFaqWebPartProps {
   description: string;
+  list: string;
 }
 
 export default class FaqWebPart extends BaseClientSideWebPart<IFaqWebPartProps> {
@@ -28,6 +33,7 @@ export default class FaqWebPart extends BaseClientSideWebPart<IFaqWebPartProps> 
       hasTeamsContext: !!this.context.sdks.microsoftTeams,
       userDisplayName: this.context.pageContext.user.displayName,
       context: this.context,
+      listGuid: this.properties.list,
     });
 
     ReactDom.render(element, this.domElement);
@@ -120,6 +126,19 @@ export default class FaqWebPart extends BaseClientSideWebPart<IFaqWebPartProps> 
               groupFields: [
                 PropertyPaneTextField("description", {
                   label: strings.DescriptionFieldLabel,
+                }),
+                PropertyFieldListPicker("lists", {
+                  label: "Select a list",
+                  selectedList: this.properties.list,
+                  includeHidden: false,
+                  orderBy: PropertyFieldListPickerOrderBy.Title,
+                  disabled: false,
+                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                  properties: this.properties,
+                  context: this.context as any,
+                  // onGetErrorMessage: null,
+                  deferredValidationTime: 0,
+                  key: "listPickerFieldId",
                 }),
               ],
             },
