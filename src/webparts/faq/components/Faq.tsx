@@ -5,15 +5,14 @@ import { SPFI } from "@pnp/sp";
 import { IFAQ } from "../../../interfaces";
 import { getSP } from "../../../pnpjsConfig";
 import { Accordion } from "@pnp/spfx-controls-react/lib/Accordion";
+import { Placeholder } from "@pnp/spfx-controls-react/lib/Placeholder";
+import { WebPartTitle } from "@pnp/spfx-controls-react/lib/WebPartTitle";
 
-const Fag = (props: IFaqProps): ReactNode => {
-  // const LOG_SOURCE = "Faq Webpart";
-
-  // const LIST_NAME = "FAQ";
-
+const Faq = (props: IFaqProps): ReactNode => {
   const _sp: SPFI = getSP(props.context);
 
   const [faqList, setFaqList] = useState<IFAQ[]>([]);
+  console.log("FSDF", _sp);
 
   const getFaq = async (): Promise<void> => {
     const items = _sp.web.lists
@@ -46,14 +45,29 @@ const Fag = (props: IFaqProps): ReactNode => {
 
   return (
     <>
-      {faqList.map((o: IFAQ, index: number) => {
-        return (
-          <Accordion title={o.Title} key={index} defaultCollapsed={true}>
-            {o.Body}
-          </Accordion>
-        );
-      })}
+      <WebPartTitle
+        displayMode={props.displayMode}
+        title={props.title}
+        updateProperty={props.updateProperty}
+      />
+      {props.listGuid ? (
+        faqList.map((o: IFAQ, index: number) => {
+          return (
+            <Accordion title={o.Title} key={index} defaultCollapsed={true}>
+              {o.Body}
+            </Accordion>
+          );
+        })
+      ) : (
+        <Placeholder
+          iconName="Edit"
+          iconText="Configure your web part"
+          description="Please configure the web part."
+          buttonLabel="Configure"
+          onConfigure={() => props.context.propertyPane.open()}
+        />
+      )}
     </>
   );
 };
-export default Fag;
+export default Faq;
